@@ -1,0 +1,8 @@
+{
+  "name": "C.E.I.P. Batalla de Taguanes",
+  "description": "C.E.I.P. Batalla de Taguanes - La Nana de Mis Sueños. Centro de Educación Infantil con 30 años de experiencia. Educación en Maternal I, II y Preescolar I, II, III con metodología constructivista inspirada en Montessori, RECREARTE e inclusión especializada.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
