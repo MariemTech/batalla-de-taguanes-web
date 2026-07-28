@@ -1,4 +1,17 @@
 import React from 'react';
+import logoImagePath from '../assets/images/logo_luna_osito_1785251209327.jpg';
+import heroClassroomPath from '../assets/images/hero_classroom_happy_1785251223264.jpg';
+import recrearteArtPath from '../assets/images/recrearte_art_workshop_1785251237531.jpg';
+import outdoorGardenPath from '../assets/images/outdoor_playground_garden_1785251250549.jpg';
+import inclusiveCarePath from '../assets/images/inclusive_specialist_care_1785251264883.jpg';
+
+export {
+  logoImagePath,
+  heroClassroomPath,
+  recrearteArtPath,
+  outdoorGardenPath,
+  inclusiveCarePath,
+};
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -7,12 +20,6 @@ interface LogoProps {
   lightText?: boolean;
   isMobileCompact?: boolean;
 }
-
-export const logoImagePath = '/src/assets/images/logo_luna_osito_1785251209327.jpg';
-export const heroClassroomPath = '/src/assets/images/hero_classroom_happy_1785251223264.jpg';
-export const recrearteArtPath = '/src/assets/images/recrearte_art_workshop_1785251237531.jpg';
-export const outdoorGardenPath = '/src/assets/images/outdoor_playground_garden_1785251250549.jpg';
-export const inclusiveCarePath = '/src/assets/images/inclusive_specialist_care_1785251264883.jpg';
 
 export const Logo: React.FC<LogoProps> = ({
   size = 'md',
