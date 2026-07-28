@@ -48,7 +48,61 @@ export const BookingSection: React.FC = () => {
       setIsSubmitting(false);
       setConfirmedBooking(bookingPayload);
       setShowSuccessModal(true);
-    }, 600);
+    }, 500);
+  };
+
+  // Generate mailto link for sending a copy to the representative's email
+  const getMailtoCopyUrl = (booking: VisitBookingData) => {
+    const subject = encodeURIComponent(
+      `Copia de Solicitud de Visita - C.E.I.P. Batalla de Taguanes (La Nana de Mis Sueños)`
+    );
+    const body = encodeURIComponent(
+      `Hola ${booking.parentName},\n\n` +
+        `Esta es una copia del resumen de tu solicitud de visita al C.E.I.P. Batalla de Taguanes - La Nana de Mis Sueños:\n\n` +
+        `• Representante: ${booking.parentName}\n` +
+        `• Correo: ${booking.email}\n` +
+        `• Teléfono: ${booking.phone}\n` +
+        `• Nivel de interés: ${booking.childAge.toUpperCase()}\n` +
+        `• Alumno/a: ${booking.childName}\n` +
+        `• Observaciones: ${booking.notes || 'Sin observaciones'}\n\n` +
+        `El centro se pondrá en contacto contigo a la brevedad para coordinar y confirmar la fecha y hora de la visita.\n\n` +
+        `Atentamente,\n` +
+        `C.E.I.P. Batalla de Taguanes - La Nana de Mis Sueños\n` +
+        `WhatsApp: +58 414-1395219\n` +
+        `Instagram: @preescolartaguanes`
+    );
+    return `mailto:${booking.email}?subject=${subject}&body=${body}`;
+  };
+
+  // Generate WhatsApp link with full booking details for the center
+  const getWhatsAppBookingUrl = (booking: VisitBookingData) => {
+    const text = encodeURIComponent(
+      `Hola, he enviado una solicitud de visita a través de la página web.\n\n` +
+        `*Datos de la solicitud:*\n` +
+        `• Representante: ${booking.parentName}\n` +
+        `• Teléfono: ${booking.phone}\n` +
+        `• Correo: ${booking.email}\n` +
+        `• Nivel de interés: ${booking.childAge.toUpperCase()}\n` +
+        `• Alumno/a: ${booking.childName}\n` +
+        `• Observaciones: ${booking.notes || 'Ninguna'}`
+    );
+    return `https://wa.me/584141395219?text=${text}`;
+  };
+
+  const [copied, setCopied] = useState(false);
+  const handleCopySummary = (booking: VisitBookingData) => {
+    const summaryText =
+      `Solicitud de Visita - C.E.I.P. Batalla de Taguanes\n` +
+      `Representante: ${booking.parentName}\n` +
+      `Correo: ${booking.email}\n` +
+      `Teléfono: ${booking.phone}\n` +
+      `Nivel: ${booking.childAge.toUpperCase()}\n` +
+      `Alumno/a: ${booking.childName}\n` +
+      `Observaciones: ${booking.notes || 'Sin observaciones'}`;
+
+    navigator.clipboard.writeText(summaryText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
   };
 
   return (
@@ -270,26 +324,48 @@ export const BookingSection: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-1 text-left">
-              <p className="font-bold text-slate-800">Resumen de la solicitud:</p>
-              <p className="text-slate-600">• Nivel: {confirmedBooking.childAge.toUpperCase()}</p>
-              <p className="text-slate-600">• Teléfono: {confirmedBooking.phone}</p>
-              <p className="text-slate-600">• Correo: {confirmedBooking.email}</p>
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-1.5 text-left">
+              <div className="flex items-center justify-between">
+                <p className="font-bold text-slate-800">Resumen de la solicitud:</p>
+                <button
+                  onClick={() => handleCopySummary(confirmedBooking)}
+                  className="text-[10px] font-semibold text-sky-700 hover:underline flex items-center gap-1"
+                >
+                  {copied ? '✓ ¡Copiado!' : 'Copiar texto'}
+                </button>
+              </div>
+              <p className="text-slate-600">• <strong>Representante:</strong> {confirmedBooking.parentName}</p>
+              <p className="text-slate-600">• <strong>Nivel:</strong> {confirmedBooking.childAge.toUpperCase()}</p>
+              <p className="text-slate-600">• <strong>Teléfono:</strong> {confirmedBooking.phone}</p>
+              <p className="text-slate-600">• <strong>Correo:</strong> {confirmedBooking.email}</p>
+              {confirmedBooking.childName && confirmedBooking.childName !== 'Por definir' && (
+                <p className="text-slate-600">• <strong>Alumno/a:</strong> {confirmedBooking.childName}</p>
+              )}
             </div>
 
             <p className="text-xs text-sky-800 font-semibold">
               El centro se pondrá en contacto contigo para confirmar el día y la hora de la visita.
             </p>
 
-            <div className="space-y-2 pt-2">
+            <div className="space-y-2.5 pt-1">
+              {/* Option A: Send copy to representative's email */}
               <a
-                href={whatsappVisitUrl}
+                href={getMailtoCopyUrl(confirmedBooking)}
+                className="w-full py-3 px-4 rounded-2xl text-xs font-bold text-sky-900 bg-sky-100 hover:bg-sky-200 transition-colors flex items-center justify-center gap-2 border border-sky-200"
+              >
+                <Mail className="w-4 h-4 text-sky-700" />
+                <span>Enviar copia a mi correo ({confirmedBooking.email})</span>
+              </a>
+
+              {/* Option B: Send request to center via WhatsApp */}
+              <a
+                href={getWhatsAppBookingUrl(confirmedBooking)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-3 px-4 rounded-2xl text-xs font-bold text-emerald-800 bg-emerald-100 hover:bg-emerald-200 transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 rounded-2xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 shadow-sm"
               >
-                <MessageSquare className="w-4 h-4 text-emerald-700 fill-emerald-200" />
-                <span>Contactar ahora por WhatsApp</span>
+                <MessageSquare className="w-4 h-4 fill-emerald-100" />
+                <span>Enviar solicitud al WhatsApp del centro</span>
               </a>
 
               <button
